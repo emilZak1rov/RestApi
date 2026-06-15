@@ -1,4 +1,4 @@
 {
   "url": "https://jsonplaceholder.typicode.com/",
-  "windowSize": "maximized"
+  "windowSizeMode": "maximized"
 }

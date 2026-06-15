@@ -12,7 +12,7 @@ public class BrowserUtils {
 
     public static void setBrowser() {
         browser = AqualityServices.getBrowser();
-        if (ResourceProvider.getConfig().windowSize.equals("maximized")) {
+        if (ResourceProvider.getConfig().windowSizeMode.equals("maximized")) {
             browser.maximize();
         }
     }

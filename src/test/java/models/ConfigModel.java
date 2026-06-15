@@ -1,6 +1,6 @@
-package filereader;
+package models;
 
 public class ConfigModel {
     public String url;
-    public String windowSize;
+    public String windowSizeMode;
 }

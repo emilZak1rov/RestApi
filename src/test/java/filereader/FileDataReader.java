@@ -18,20 +18,20 @@ public class FileDataReader {
 
     public static String readFile(String filePath) {
         if (filePath == null || filePath.trim().isEmpty()) {
-            LogUtils.logError("ОШИБКА: Путь к файлу не может быть null или пустым");
-            throw new IllegalArgumentException("ОШИБКА: Путь к файлу не может быть null или пустым");
+            LogUtils.logError("Путь к файлу не может быть null или пустым");
+            throw new IllegalArgumentException("Путь к файлу не может быть null или пустым");
         }
         try {
             Path path = Paths.get(filePath);
-            String jsonContent = Files.readString(path);
-            if (jsonContent.trim().isEmpty()) {
-                LogUtils.logError(String.format("ОШИБКА: Файл пуст: %s", filePath));
-                throw new IllegalStateException(String.format("ОШИБКА: Файл пуст: %s", filePath));
+            String content = Files.readString(path);
+            if (content.trim().isEmpty()) {
+                LogUtils.logError(String.format("Файл пуст: %s", filePath));
+                throw new IllegalStateException(String.format("Файл пуст: %s", filePath));
             }
-            return jsonContent;
+            return content;
         } catch (IOException e) {
-            LogUtils.logError(String.format("ОШИБКА: Ошибка при чтении файла: %s", filePath));
-            throw new RuntimeException(String.format("ОШИБКА: Ошибка при чтении файла: %s", filePath), e);
+            LogUtils.logError(String.format("Ошибка при чтении файла: %s", filePath));
+            throw new RuntimeException(String.format("Ошибка при чтении файла: %s", filePath), e);
         }
     }
 
@@ -40,8 +40,8 @@ public class FileDataReader {
         try {
             return GSON.fromJson(jsonContent, classType);
         } catch (JsonSyntaxException e) {
-            LogUtils.logError(String.format("ОШИБКА: Не удалось распарсить JSON в объект типа %s", classType.getSimpleName()));
-            throw new RuntimeException(String.format("ОШИБКА: Не удалось распарсить JSON в объект типа %s", classType.getSimpleName()), e);
+            LogUtils.logError(String.format("Не удалось распарсить JSON в объект типа %s", classType.getSimpleName()));
+            throw new RuntimeException(String.format("Не удалось распарсить JSON в объект типа %s", classType.getSimpleName()), e);
         }
     }
 }

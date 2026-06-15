@@ -1,5 +1,7 @@
 package filereader;
 
+import models.ConfigModel;
+
 public class ResourceProvider {
     private static ConfigModel config;
     private static final String CONFIG_PATH = "config.json";
