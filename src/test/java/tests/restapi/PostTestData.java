@@ -1,6 +1,7 @@
-package models;
+package tests.restapi;
 
 import lombok.NoArgsConstructor;
+import models.Post;
 
 @NoArgsConstructor
 public class PostTestData {
@@ -15,6 +16,6 @@ public class PostTestData {
     }
 
     public Post getPost() {
-        return new Post(userId, id, title, body);
+        return getPost(this);
     }
 }

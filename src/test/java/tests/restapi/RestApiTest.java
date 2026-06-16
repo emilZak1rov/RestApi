@@ -104,7 +104,16 @@ public class RestApiTest extends BaseTest {
         Assert.assertFalse(users.isEmpty(), "Пользователей 0");
 
         User actualUser = users.stream().filter(user -> user.getId() == data.step5.id).findFirst().orElse(null);
-        Assert.assertEquals(actualUser, data.step5);
+        Assert.assertEquals(actualUser, data.step5.getUser(), "Пользовательские данные не равны");
+
+        LogUtils.logInfo(String.format("6. Отправьте запрос GET, чтобы получить пользователя с id=%d (/users/%d).",
+                data.step6.expectedStatusCode, data.step6.id));
+        response = UserClient.getUserById(data.step6.id);
+
+        assertStatusCode(response.getStatusCode(), data.step6.expectedStatusCode);
+
+        LogUtils.logInfo("Проверка совпадения пользовательских данных с данными на предыдущем шаге");
+        Assert.assertEquals(response.getBody().as(User.class), actualUser);
     }
 
     private boolean isSortedAscending(List<Integer> list) {

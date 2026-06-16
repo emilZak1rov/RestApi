@@ -50,5 +50,9 @@
       "catchPhrase": "User-centric fault-tolerant solution",
       "bs": "revolutionize end-to-end systems"
     }
+  },
+  "step6": {
+    "expectedStatusCode": 200,
+    "id": 5
   }
 }
