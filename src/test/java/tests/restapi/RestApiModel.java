@@ -1,8 +1,10 @@
 package tests.restapi;
 
+import models.PostModel;
+
 public class RestApiModel {
-    public int userId;
-    public int id;
-    public String title;
-    public String body;
+    PostModel step1;
+    PostModel step2;
+    PostModel step3;
+    PostModel step4;
 }

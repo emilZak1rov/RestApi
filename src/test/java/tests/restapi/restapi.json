@@ -1,6 +1,30 @@
 {
-  "userId": 10,
-  "id": 99,
-  "title": "not empty",
-  "body": "not empty"
+  "step1": {
+    "expectedStatusCode": 200,
+    "userId": null,
+    "id": null,
+    "title": null,
+    "body": null
+  },
+  "step2": {
+    "expectedStatusCode": 200,
+    "userId": 10,
+    "id": 99,
+    "title": "not empty",
+    "body": "not empty"
+  },
+  "step3": {
+    "expectedStatusCode": 404,
+    "userId": null,
+    "id": 150,
+    "title": null,
+    "body": null
+  },
+  "step4": {
+    "expectedStatusCode": 201,
+    "userId": 1,
+    "id": null,
+    "title": null,
+    "body": null
+  }
 }

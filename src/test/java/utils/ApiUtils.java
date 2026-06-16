@@ -18,9 +18,9 @@ public class ApiUtils {
                 .response();
     }
 
-    public static Response sendRequest(String endpoint, Object requestBody) {
+    public static Response sendRequest(String endpoint, ContentType contentType, Object requestBody) {
         return given()
-                .contentType(ContentType.JSON)
+                .contentType(contentType)
                 .body(requestBody)
                 .when()
                 .post(endpoint)
@@ -28,4 +28,6 @@ public class ApiUtils {
                 .extract()
                 .response();
     }
+
+
 }

@@ -1,16 +1,17 @@
 package tests.restapi;
 
-import clients.JsonPlaceHolderClient;
+import clients.PostsClient;
 import filereader.FileDataReader;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import models.PostModel;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import tests.BaseTest;
 import utils.LogUtils;
+import utils.RandomUtils;
 
-import java.net.HttpURLConnection;
 import java.util.List;
 
 public class RestApiTest extends BaseTest {
@@ -25,16 +26,16 @@ public class RestApiTest extends BaseTest {
     @Test(dataProvider = "RestApiModel")
     public void Test(RestApiModel data) {
         LogUtils.logInfo("1. Отправьте запрос GET, чтобы получить все сообщения (/posts).");
-        Response response = JsonPlaceHolderClient.getRequest("/posts");
+        Response response = PostsClient.getAllPosts();
 
-        LogUtils.logInfo("Проверка кода состояния");
-        Assert.assertEquals(response.getStatusCode(), HttpURLConnection.HTTP_OK,
-                String.format("Код состояния должен быть %s, но получен: %s", HttpURLConnection.HTTP_OK, response.getStatusCode()));
+        assertStatusCode(response.getStatusCode(), data.step1.expectedStatusCode);
 
+        LogUtils.logInfo("Проверка формата файла");
         String contentType = response.getContentType();
         Assert.assertTrue(contentType != null && contentType.contains("application/json"),
                 String.format("Content-Type должен быть application/json, но получен: %s", contentType));
 
+        LogUtils.logInfo("Проверка сортировки сообщений по возрастанию");
         JsonPath jsonPath = response.jsonPath();
         List<Integer> ids = jsonPath.getList("id");
 
@@ -43,16 +44,14 @@ public class RestApiTest extends BaseTest {
         Assert.assertTrue(isSortedAscending(ids),
                 "Сообщения не отсортированы по id в порядке возрастания");
 
-        LogUtils.logInfo(" 2. Отправьте запрос GET, чтобы получить пост с id=99 (/posts/99).");
-        response = JsonPlaceHolderClient.getRequest("/posts/99");
+        LogUtils.logInfo(String.format("2. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).", data.step2.id, data.step2.id));
+        response = PostsClient.getPostById(data.step2.id);
 
-        LogUtils.logInfo("Проверка кода состояния");
-        Assert.assertEquals(response.getStatusCode(), HttpURLConnection.HTTP_OK,
-                String.format("Код состояния должен быть %s, но получен: %s", HttpURLConnection.HTTP_OK, response.getStatusCode()));
+        assertStatusCode(response.getStatusCode(), data.step2.expectedStatusCode);
 
         LogUtils.logInfo("Проверка информации о сообщении");
-        int expectedUserId = data.userId;
-        int expectedId = data.id;
+        int expectedUserId = data.step2.userId;
+        int expectedId = data.step2.id;
         int userId = response.jsonPath().getInt("userId");
         int id = response.jsonPath().getInt("id");
 
@@ -61,17 +60,38 @@ public class RestApiTest extends BaseTest {
         Assert.assertNotNull(response.jsonPath().getString("title"), String.format("title пустой у id=%s", id));
         Assert.assertNotNull(response.jsonPath().getString("body"), String.format("body пустое у id=%s", id));
 
-        LogUtils.logInfo("3. Отправьте запрос GET, чтобы получить пост с id=150 (/posts/150).");
-        response = JsonPlaceHolderClient.getRequest("/posts/150");
+        LogUtils.logInfo(String.format("3. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
+                data.step3.id, data.step3.id));
+        response = PostsClient.getPostById(data.step3.id);
 
-        LogUtils.logInfo("Проверка кода состояния");
-        Assert.assertEquals(response.getStatusCode(), HttpURLConnection.HTTP_NOT_FOUND,
-                String.format("Код состояния должен быть %s, но получен: %s", HttpURLConnection.HTTP_NOT_FOUND, response.getStatusCode()));
+        assertStatusCode(response.getStatusCode(), data.step3.expectedStatusCode);
 
         LogUtils.logInfo("Проверка body");
-        Assert.assertNull(response.jsonPath().getString("body"));
+        Assert.assertEquals(response.jsonPath().getString("body"), data.step3.body,
+                String.format("body не пустое, = %s", response.jsonPath().getString("body")));
 
-        LogUtils.logInfo("4. Отправьте POST-запрос, чтобы создать сообщение с userId=1 и случайным телом и случайным заголовком (/posts).");
+        LogUtils.logInfo(String.format(
+                "4. Отправьте POST-запрос, чтобы создать сообщение с userId=%d и случайным телом и случайным заголовком (/posts).",
+                data.step4.userId));
+        PostModel post = new PostModel();
+        post.userId = data.step4.userId;
+        post.body = RandomUtils.randomString(5);
+        post.title = RandomUtils.randomString(6);
+
+        response = PostsClient.createPost(post);
+
+        assertStatusCode(response.getStatusCode(), data.step4.expectedStatusCode);
+
+        LogUtils.logInfo("Проверка отправленного сообщения");
+        PostModel createdPost = response.getBody().as(PostModel.class);
+        Assert.assertEquals(post.userId, createdPost.userId,
+                String.format("userId не совпал, send=%d, created=%d", post.userId, createdPost.userId));
+        Assert.assertEquals(post.title, createdPost.title,
+                String.format("title не совпал, send=%s, created=%s", post.title, createdPost.title));
+        Assert.assertEquals(post.body, createdPost.body,
+                String.format("body не совпал, send=%s, created=%s", post.body, createdPost.body));
+        Assert.assertTrue(createdPost.id > 0, "id не создался");
+
 
     }
 
@@ -86,5 +106,11 @@ public class RestApiTest extends BaseTest {
             }
         }
         return true;
+    }
+
+    private void assertStatusCode(int actual, int expected) {
+        LogUtils.logInfo("Проверка кода состояния");
+        Assert.assertEquals(actual, expected,
+                String.format("Код состояния должен быть %d, но получен: %d", expected, actual));
     }
 }
