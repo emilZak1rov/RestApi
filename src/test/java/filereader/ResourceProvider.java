@@ -1,14 +1,14 @@
 package filereader;
 
-import models.ConfigModel;
+import models.Config;
 
 public class ResourceProvider {
-    private static ConfigModel config;
+    private static Config config;
     private static final String CONFIG_PATH = "config.json";
 
-    public static ConfigModel getConfig() {
+    public static Config getConfig() {
         if (config == null) {
-            config = FileDataReader.readAndParse(CONFIG_PATH, ConfigModel.class);
+            config = FileDataReader.readAndParse(CONFIG_PATH, Config.class);
         }
         return config;
     }

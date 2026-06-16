@@ -2,7 +2,7 @@ package clients;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import models.PostModel;
+import models.Post;
 import utils.ApiUtils;
 
 public class PostsClient {
@@ -20,7 +20,7 @@ public class PostsClient {
         return ApiUtils.getRequest(String.format(POSTS_ENDPOINT_WITH_ID, id));
     }
 
-    public static Response createPost(PostModel postModel) {
-        return ApiUtils.sendRequest(POSTS_ENDPOINT, ContentType.JSON, postModel);
+    public static Response createPost(Post post) {
+        return ApiUtils.sendRequest(POSTS_ENDPOINT, ContentType.JSON, post);
     }
 }

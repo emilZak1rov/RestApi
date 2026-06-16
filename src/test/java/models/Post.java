@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostModel {
-    public int expectedStatusCode;
+public class Post {
     public int userId;
     public int id;
     public String title;

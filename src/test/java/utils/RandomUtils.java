@@ -1,5 +1,7 @@
 package utils;
 
+import org.openqa.selenium.InvalidArgumentException;
+
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,7 +19,7 @@ public class RandomUtils {
 
     public static String randomString(int length, String characters) {
         if (length <= 0) {
-            return "";
+            throw new InvalidArgumentException(String.format("Длина рандомно сгенерированной строки меньше или равна 0= %d", length));
         }
         if (characters == null || characters.isEmpty()) {
             throw new IllegalArgumentException("Набор символов не может быть пустым");

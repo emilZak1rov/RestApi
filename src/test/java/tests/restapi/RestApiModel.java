@@ -1,10 +1,12 @@
 package tests.restapi;
 
-import models.PostModel;
+import models.PostTestData;
+import models.User;
 
 public class RestApiModel {
-    PostModel step1;
-    PostModel step2;
-    PostModel step3;
-    PostModel step4;
+    PostTestData step1;
+    PostTestData step2;
+    PostTestData step3;
+    PostTestData step4;
+    User step5;
 }

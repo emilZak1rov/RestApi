@@ -1,6 +1,6 @@
 package models;
 
-public class ConfigModel {
+public class Config {
     public String url;
     public String windowSizeMode;
 }
