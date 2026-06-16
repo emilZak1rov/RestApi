@@ -43,14 +43,15 @@ public class RestApiTest extends BaseTest {
         Assert.assertTrue(isSortedAscending(ids),
                 "Сообщения не отсортированы по id в порядке возрастания");
 
-        LogUtils.logInfo(String.format("2. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).", data.step2.id, data.step2.id));
-        response = PostsClient.getPostById(data.step2.id);
+        LogUtils.logInfo(String.format("2. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
+                data.step2.post.id, data.step2.post.id));
+        response = PostsClient.getPostById(data.step2.post.id);
 
         assertStatusCode(response.getStatusCode(), data.step2.expectedStatusCode);
 
         LogUtils.logInfo("Проверка информации о сообщении");
-        int expectedUserId = data.step2.userId;
-        int expectedId = data.step2.id;
+        int expectedUserId = data.step2.post.userId;
+        int expectedId = data.step2.post.id;
         int userId = response.jsonPath().getInt("userId");
         int id = response.jsonPath().getInt("id");
 
@@ -60,20 +61,20 @@ public class RestApiTest extends BaseTest {
         Assert.assertNotNull(response.jsonPath().getString("body"), String.format("body пустое у id=%s", id));
 
         LogUtils.logInfo(String.format("3. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
-                data.step3.id, data.step3.id));
-        response = PostsClient.getPostById(data.step3.id);
+                data.step3.post.id, data.step3.post.id));
+        response = PostsClient.getPostById(data.step3.post.id);
 
         assertStatusCode(response.getStatusCode(), data.step3.expectedStatusCode);
 
         LogUtils.logInfo("Проверка body");
-        Assert.assertEquals(response.jsonPath().getString("body"), data.step3.body,
+        Assert.assertEquals(response.jsonPath().getString("body"), data.step3.post.body,
                 String.format("body не пустое, = %s", response.jsonPath().getString("body")));
 
         LogUtils.logInfo(String.format(
                 "4. Отправьте POST-запрос, чтобы создать сообщение с userId=%d и случайным телом и случайным заголовком (/posts).",
-                data.step4.userId));
+                data.step4.post.userId));
         Post post = new Post();
-        post.userId = data.step4.userId;
+        post.userId = data.step4.post.userId;
         post.body = RandomUtils.randomString(5);
         post.title = RandomUtils.randomString(6);
 
@@ -103,12 +104,12 @@ public class RestApiTest extends BaseTest {
         Assert.assertNotNull(users, "Пользователи null");
         Assert.assertFalse(users.isEmpty(), "Пользователей 0");
 
-        User actualUser = users.stream().filter(user -> user.getId() == data.step5.id).findFirst().orElse(null);
+        User actualUser = users.stream().filter(user -> user.getId() == data.step5.user.id).findFirst().orElse(null);
         Assert.assertEquals(actualUser, data.step5.getUser(), "Пользовательские данные не равны");
 
         LogUtils.logInfo(String.format("6. Отправьте запрос GET, чтобы получить пользователя с id=%d (/users/%d).",
-                data.step6.expectedStatusCode, data.step6.id));
-        response = UserClient.getUserById(data.step6.id);
+                data.step6.expectedStatusCode, data.step6.user.id));
+        response = UserClient.getUserById(data.step6.user.id);
 
         assertStatusCode(response.getStatusCode(), data.step6.expectedStatusCode);
 

@@ -1,58 +1,64 @@
 {
   "step1": {
-    "expectedStatusCode": 200,
-    "userId": null,
-    "id": null,
-    "title": null,
-    "body": null
+    "expectedStatusCode": 200
   },
   "step2": {
     "expectedStatusCode": 200,
-    "userId": 10,
-    "id": 99,
-    "title": "not empty",
-    "body": "not empty"
+    "post": {
+      "userId": 10,
+      "id": 99,
+      "title": "not empty",
+      "body": "not empty"
+    }
   },
   "step3": {
     "expectedStatusCode": 404,
-    "userId": null,
-    "id": 150,
-    "title": null,
-    "body": null
+    "post": {
+      "userId": null,
+      "id": 150,
+      "title": null,
+      "body": null
+    }
   },
   "step4": {
     "expectedStatusCode": 201,
-    "userId": 1,
-    "id": null,
-    "title": null,
-    "body": null
+    "post": {
+      "userId": 1,
+      "id": null,
+      "title": null,
+      "body": null
+    }
   },
   "step5": {
     "expectedStatusCode": 200,
-    "id": 5,
-    "name": "Chelsey Dietrich",
-    "username": "Kamren",
-    "email": "Lucio_Hettinger@annie.ca",
-    "address": {
-      "street": "Skiles Walks",
-      "suite": "Suite 351",
-      "city": "Roscoeview",
-      "zipcode": "33263",
-      "geo": {
-        "lat": "-31.8129",
-        "lng": "62.5342"
+    "user": {
+      "id": 5,
+      "name": "Chelsey Dietrich",
+      "username": "Kamren",
+      "email": "Lucio_Hettinger@annie.ca",
+      "address": {
+        "street": "Skiles Walks",
+        "suite": "Suite 351",
+        "city": "Roscoeview",
+        "zipcode": "33263",
+        "geo": {
+          "lat": "-31.8129",
+          "lng": "62.5342"
+        }
+      },
+      "phone": "(254)954-1289",
+      "website": "demarco.info",
+      "company": {
+        "name": "Keebler LLC",
+        "catchPhrase": "User-centric fault-tolerant solution",
+        "bs": "revolutionize end-to-end systems"
       }
-    },
-    "phone": "(254)954-1289",
-    "website": "demarco.info",
-    "company": {
-      "name": "Keebler LLC",
-      "catchPhrase": "User-centric fault-tolerant solution",
-      "bs": "revolutionize end-to-end systems"
     }
   },
   "step6": {
     "expectedStatusCode": 200,
-    "id": 5
+    "user": {
+      "id": 5
+    }
   }
 }
