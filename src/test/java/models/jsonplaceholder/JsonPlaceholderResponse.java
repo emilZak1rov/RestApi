@@ -1,45 +1,47 @@
 package models.jsonplaceholder;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
+import lombok.Getter;
 
-import java.net.HttpURLConnection;
+import java.lang.reflect.Type;
 
-public record JsonPlaceholderResponse<T>(int statusCode, String contentType, T body) {
-    public static <T> JsonPlaceholderResponse<T> fromRawResponse(Response response, Class<T> responseType) {
-        int statusCode = response.statusCode();
-        String contentType = response.getHeader("Content-Type");
-        ObjectMapper objectMapper = new ObjectMapper();
+@Getter
+public class JsonPlaceholderResponse<T> {
+    private final int statusCode;
+    private final String contentType;
+    private final T body;
 
-        if (statusCode >= HttpURLConnection.HTTP_OK && statusCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-            try {
-                String bodyString = response.getBody().toString();
-                T body = objectMapper.readValue(bodyString, responseType);
-                return new JsonPlaceholderResponse<>(statusCode, contentType, body);
-            } catch (Exception e) {
-                return new JsonPlaceholderResponse<>(statusCode, contentType, null);
-            }
-        } else {
-            return new JsonPlaceholderResponse<>(statusCode, contentType, null);
-        }
+    private JsonPlaceholderResponse(int statusCode, String contentType, T body) {
+        this.statusCode = statusCode;
+        this.contentType = contentType;
+        this.body = body;
     }
 
-    public static <T> JsonPlaceholderResponse<T> fromRawResponse(Response response, TypeReference<T> responseType) {
-        int statusCode = response.statusCode();
-        String contentType = response.getHeader("Content-Type");
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Class<T> modelClass) {
+        return fromResponse(response, modelClass, null);
+    }
 
-        if (statusCode >= HttpURLConnection.HTTP_OK && statusCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-            try {
-                String bodyString = response.getBody().asString();
-                T body = objectMapper.readValue(bodyString, responseType);
-                return new JsonPlaceholderResponse<>(statusCode, contentType, body);
-            } catch (Exception e) {
-                return new JsonPlaceholderResponse<>(statusCode, contentType, null);
+    public static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Type type) {
+        return fromResponse(response, null, type);
+    }
+
+    private static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Class<T> modelClass, Type type) {
+        int statusCode = response.getStatusCode();
+        String contentType = response.getContentType();
+        String bodyAsString = response.getBody().asString();
+
+        T deserializedBody = null;
+        if (bodyAsString != null && !bodyAsString.isEmpty() && (modelClass != null || type != null)) {
+            if (type != null) {
+                deserializedBody = response.getBody().as(type);
+            } else if (modelClass != null) {
+                deserializedBody = response.getBody().as(modelClass);
             }
-        } else {
-            return new JsonPlaceholderResponse<>(statusCode, contentType, null);
         }
+        return new JsonPlaceholderResponse<>(statusCode, contentType, deserializedBody);
+    }
+
+    public boolean isBodyDeserialized() {
+        return body != null;
     }
 }

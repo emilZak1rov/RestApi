@@ -1,9 +1,7 @@
 package clients;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import filereader.ResourceProvider;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import models.jsonplaceholder.JsonPlaceholderResponse;
 import models.jsonplaceholder.Post;
 import models.jsonplaceholder.User;
@@ -22,32 +20,52 @@ public class JsonPlaceholderClient {
     private JsonPlaceholderClient() {
     }
 
-    public static Response getAllPosts() {
+    /*public static Response getAllPosts() {
         return API.getRequest(getFullEndpoint(POSTS_ENDPOINT));
+    }*/
+
+    public static JsonPlaceholderResponse<List<Post>> getAllPosts() {
+        return JsonPlaceholderResponse.fromResponse(
+                API.getRequest(getFullEndpoint(POSTS_ENDPOINT)),
+                new com.google.common.reflect.TypeToken<List<Post>>() {
+                }.getType());
     }
 
-    public static JsonPlaceholderResponse<List<Post>> getListPosts() {
-        return JsonPlaceholderResponse.fromRawResponse(
-                API.getRequest(getFullEndpoint(POSTS_ENDPOINT)), new TypeReference<List<Post>>() {
-                });
-    }
-
-    public static Response getPostById(int id) {
+    /*public static Response getPostById(int id) {
         return API.getRequest(getFullEndpoint(POSTS_ENDPOINT, String.valueOf(id)));
+    }*/
+
+    public static JsonPlaceholderResponse<Post> getPostById(int id) {
+        return JsonPlaceholderResponse.fromResponse(API.getRequest(getFullEndpoint(POSTS_ENDPOINT, String.valueOf(id))),
+                Post.class);
     }
 
-    public static Response createPost(Post post) {
+    /*public static Response createPost(Post post) {
         return API.sendRequest(getFullEndpoint(POSTS_ENDPOINT), ContentType.JSON, post);
+    }*/
+
+    public static JsonPlaceholderResponse<Post> createPost(Post post) {
+        return JsonPlaceholderResponse.fromResponse(API.sendRequest(getFullEndpoint(POSTS_ENDPOINT), ContentType.JSON, post),
+                Post.class);
     }
+
+    /*public static Response getAllUsers() {
+        return API.getRequest(getFullEndpoint(USERS_ENDPOINT));
+    }*/
 
     public static JsonPlaceholderResponse<List<User>> getAllUsers() {
-//        return API.getRequest(getFullEndpoint(USERS_ENDPOINT));
-        return JsonPlaceholderResponse.fromRawResponse(
-                API.getRequest(getFullEndpoint(USERS_ENDPOINT)), new TypeReference<List<User>>() {
-                });
+        return JsonPlaceholderResponse.fromResponse(
+                API.getRequest(getFullEndpoint(USERS_ENDPOINT)),
+                new com.google.common.reflect.TypeToken<List<User>>() {
+                }.getType());
     }
 
-    public static Response getUserById(int id) {
+    /*public static Response getUserById(int id) {
         return API.getRequest(getFullEndpoint(USERS_ENDPOINT, String.valueOf(id)));
+    }*/
+
+    public static JsonPlaceholderResponse<User> getUserById(int id) {
+        return JsonPlaceholderResponse.fromResponse(API.getRequest(getFullEndpoint(USERS_ENDPOINT, String.valueOf(id))),
+                User.class);
     }
 }
