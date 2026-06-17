@@ -1,6 +1,6 @@
 package tests.restapi;
 
-public class RestApiModel {
+public class RestApiTestData {
     PostTestData step1;
     PostTestData step2;
     PostTestData step3;

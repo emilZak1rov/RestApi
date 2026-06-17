@@ -2,7 +2,7 @@ package clients;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import models.Post;
+import models.jsonplaceholder.Post;
 import utils.ApiUtils;
 
 public class PostsClient {

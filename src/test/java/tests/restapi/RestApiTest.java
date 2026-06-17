@@ -5,8 +5,8 @@ import clients.UserClient;
 import filereader.FileDataReader;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import models.Post;
-import models.User;
+import models.jsonplaceholder.Post;
+import models.jsonplaceholder.User;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -20,14 +20,14 @@ import java.util.List;
 public class RestApiTest extends BaseTest {
     @DataProvider(name = "RestApiModel")
     public Object[][] getTimerData() {
-        RestApiModel dataModel = FileDataReader.readAndParse("src/test/java/tests/restapi/restapi.json", RestApiModel.class);
+        RestApiTestData dataModel = FileDataReader.readAndParse("src/test/java/tests/restapi/restapi.json", RestApiTestData.class);
         return new Object[][]{
                 {dataModel}
         };
     }
 
     @Test(dataProvider = "RestApiModel")
-    public void Test(RestApiModel data) {
+    public void Test(RestApiTestData data) {
         LogUtils.logInfo("1. Отправьте запрос GET, чтобы получить все сообщения (/posts).");
         Response response = PostsClient.getAllPosts();
 
@@ -39,7 +39,7 @@ public class RestApiTest extends BaseTest {
         List<Integer> ids = jsonPath.getList("id");
 
         Assert.assertNotNull(ids, "Список сообщений не должен быть null");
-        Assert.assertTrue(ids.size() > 0, "Список сообщений не должен быть пустым");
+        Assert.assertFalse(ids.isEmpty(), "Список сообщений не должен быть пустым");
         Assert.assertTrue(isSortedAscending(ids),
                 "Сообщения не отсортированы по id в порядке возрастания");
 
@@ -55,10 +55,10 @@ public class RestApiTest extends BaseTest {
         int userId = response.jsonPath().getInt("userId");
         int id = response.jsonPath().getInt("id");
 
-        Assert.assertEquals(userId, expectedUserId, String.format("Ожидаемое userId=%s, фактическое userId=%s", expectedUserId, userId));
-        Assert.assertEquals(id, expectedId, String.format("Ожидаемое id=%s, фактическое id=%s", expectedId, id));
-        Assert.assertNotNull(response.jsonPath().getString("title"), String.format("title пустой у id=%s", id));
-        Assert.assertNotNull(response.jsonPath().getString("body"), String.format("body пустое у id=%s", id));
+        Assert.assertEquals(userId, expectedUserId, "userId не совпадает");
+        Assert.assertEquals(id, expectedId, "id не совпадает");
+        Assert.assertNotNull(response.jsonPath().getString("title"), "title пустой");
+        Assert.assertNotNull(response.jsonPath().getString("body"), "body пустой");
 
         LogUtils.logInfo(String.format("3. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
                 data.step3.post.id, data.step3.post.id));
@@ -68,7 +68,7 @@ public class RestApiTest extends BaseTest {
 
         LogUtils.logInfo("Проверка body");
         Assert.assertEquals(response.jsonPath().getString("body"), data.step3.post.body,
-                String.format("body не пустое, = %s", response.jsonPath().getString("body")));
+                "body не пустое");
 
         LogUtils.logInfo(String.format(
                 "4. Отправьте POST-запрос, чтобы создать сообщение с userId=%d и случайным телом и случайным заголовком (/posts).",
@@ -85,11 +85,11 @@ public class RestApiTest extends BaseTest {
         LogUtils.logInfo("Проверка отправленного сообщения");
         Post createdPost = response.getBody().as(Post.class);
         Assert.assertEquals(post.userId, createdPost.userId,
-                String.format("userId не совпал, send=%d, created=%d", post.userId, createdPost.userId));
+                "userId не совпадает");
         Assert.assertEquals(post.title, createdPost.title,
-                String.format("title не совпал, send=%s, created=%s", post.title, createdPost.title));
+                "title не совпадает");
         Assert.assertEquals(post.body, createdPost.body,
-                String.format("body не совпал, send=%s, created=%s", post.body, createdPost.body));
+                "body не совпадает");
         Assert.assertTrue(createdPost.id > 0, "id не создался");
 
         LogUtils.logInfo("5. Отправьте запрос GET, чтобы получить пользователей (/users).");
@@ -132,13 +132,12 @@ public class RestApiTest extends BaseTest {
 
     private void assertStatusCode(int actual, int expected) {
         LogUtils.logInfo("Проверка кода состояния");
-        Assert.assertEquals(actual, expected,
-                String.format("Код состояния должен быть %d, но получен: %d", expected, actual));
+        Assert.assertEquals(actual, expected, "Код состояния не равен ожидаемому");
     }
 
     private void assertFileFormat(String contentType, String expectedContentType) {
         LogUtils.logInfo("Проверка формата файла");
         Assert.assertTrue(contentType != null && contentType.contains(expectedContentType),
-                String.format("Content-Type должен быть %s, но получен: %s", expectedContentType, contentType));
+                "Content-type не равен ожидаемому");
     }
 }

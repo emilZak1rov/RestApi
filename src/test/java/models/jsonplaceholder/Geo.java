@@ -1,4 +1,4 @@
-package models;
+package models.jsonplaceholder;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

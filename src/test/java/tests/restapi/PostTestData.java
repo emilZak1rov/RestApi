@@ -2,7 +2,7 @@ package tests.restapi;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import models.Post;
+import models.jsonplaceholder.Post;
 
 @NoArgsConstructor
 @Data

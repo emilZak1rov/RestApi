@@ -4,7 +4,7 @@ import models.Config;
 
 public class ResourceProvider {
     private static Config config;
-    private static final String CONFIG_PATH = "config.json";
+    private static final String CONFIG_PATH = "src/test/resources/config.json";
 
     public static Config getConfig() {
         if (config == null) {
