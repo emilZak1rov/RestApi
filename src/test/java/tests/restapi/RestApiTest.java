@@ -1,25 +1,20 @@
 package tests.restapi;
 
-import clients.PostsClient;
-import clients.UserClient;
+import clients.JsonPlaceholderClient;
 import filereader.FileDataReader;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import models.jsonplaceholder.Post;
-import models.jsonplaceholder.User;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import tests.BaseTest;
 import utils.LogUtils;
-import utils.RandomUtils;
 
-import java.util.Arrays;
+import java.net.URISyntaxException;
 import java.util.List;
 
 public class RestApiTest extends BaseTest {
     @DataProvider(name = "RestApiModel")
-    public Object[][] getTimerData() {
+    public Object[][] getTimerData() throws URISyntaxException {
         RestApiTestData dataModel = FileDataReader.readAndParse("src/test/java/tests/restapi/restapi.json", RestApiTestData.class);
         return new Object[][]{
                 {dataModel}
@@ -29,10 +24,14 @@ public class RestApiTest extends BaseTest {
     @Test(dataProvider = "RestApiModel")
     public void Test(RestApiTestData data) {
         LogUtils.logInfo("1. Отправьте запрос GET, чтобы получить все сообщения (/posts).");
-        Response response = PostsClient.getAllPosts();
+        Response response = JsonPlaceholderClient.getAllPosts();
+        var pespon = JsonPlaceholderClient.getListPosts();
+        System.out.println(pespon.body().get(1));
+        var userr = JsonPlaceholderClient.getAllUsers();
+        System.out.println(userr.body().get(1));
 
-        assertStatusCode(response.getStatusCode(), data.step1.expectedStatusCode);
-        assertFileFormat(response.getContentType(), "application/json");
+        assertStatusCode(pespon.statusCode(), data.step1.expectedStatusCode);
+        assertFileFormat(pespon.contentType(), "application/json");
 
         LogUtils.logInfo("Проверка сортировки сообщений по возрастанию");
         JsonPath jsonPath = response.jsonPath();
@@ -45,7 +44,7 @@ public class RestApiTest extends BaseTest {
 
         LogUtils.logInfo(String.format("2. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
                 data.step2.post.id, data.step2.post.id));
-        response = PostsClient.getPostById(data.step2.post.id);
+        response = JsonPlaceholderClient.getPostById(data.step2.post.id);
 
         assertStatusCode(response.getStatusCode(), data.step2.expectedStatusCode);
 
@@ -62,7 +61,7 @@ public class RestApiTest extends BaseTest {
 
         LogUtils.logInfo(String.format("3. Отправьте запрос GET, чтобы получить пост с id=%d (/posts/%d).",
                 data.step3.post.id, data.step3.post.id));
-        response = PostsClient.getPostById(data.step3.post.id);
+        response = JsonPlaceholderClient.getPostById(data.step3.post.id);
 
         assertStatusCode(response.getStatusCode(), data.step3.expectedStatusCode);
 
@@ -78,7 +77,7 @@ public class RestApiTest extends BaseTest {
         post.body = RandomUtils.randomString(5);
         post.title = RandomUtils.randomString(6);
 
-        response = PostsClient.createPost(post);
+        response = JsonPlaceholderClient.createPost(post);
 
         assertStatusCode(response.getStatusCode(), data.step4.expectedStatusCode);
 
@@ -93,7 +92,7 @@ public class RestApiTest extends BaseTest {
         Assert.assertTrue(createdPost.id > 0, "id не создался");
 
         LogUtils.logInfo("5. Отправьте запрос GET, чтобы получить пользователей (/users).");
-        response = UserClient.getAllUsers();
+        response = JsonPlaceholderClient.getAllUsers();
 
         assertStatusCode(response.getStatusCode(), data.step5.expectedStatusCode);
         assertFileFormat(response.getContentType(), "application/json");
@@ -109,7 +108,7 @@ public class RestApiTest extends BaseTest {
 
         LogUtils.logInfo(String.format("6. Отправьте запрос GET, чтобы получить пользователя с id=%d (/users/%d).",
                 data.step6.expectedStatusCode, data.step6.user.id));
-        response = UserClient.getUserById(data.step6.user.id);
+        response = JsonPlaceholderClient.getUserById(data.step6.user.id);
 
         assertStatusCode(response.getStatusCode(), data.step6.expectedStatusCode);
 
