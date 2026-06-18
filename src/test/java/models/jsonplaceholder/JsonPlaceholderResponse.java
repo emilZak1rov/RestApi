@@ -17,26 +17,14 @@ public class JsonPlaceholderResponse<T> {
         this.body = body;
     }
 
-    public static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Class<T> modelClass) {
-        return fromResponse(response, modelClass, null);
-    }
-
     public static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Type type) {
-        return fromResponse(response, null, type);
-    }
-
-    private static <T> JsonPlaceholderResponse<T> fromResponse(Response response, Class<T> modelClass, Type type) {
         int statusCode = response.getStatusCode();
         String contentType = response.getContentType();
         String bodyAsString = response.getBody().asString();
-
         T deserializedBody = null;
-        if (bodyAsString != null && !bodyAsString.isEmpty() && (modelClass != null || type != null)) {
-            if (type != null) {
-                deserializedBody = response.getBody().as(type);
-            } else if (modelClass != null) {
-                deserializedBody = response.getBody().as(modelClass);
-            }
+
+        if (bodyAsString != null && !bodyAsString.isEmpty() && type != null) {
+            deserializedBody = response.getBody().as(type);
         }
         return new JsonPlaceholderResponse<>(statusCode, contentType, deserializedBody);
     }

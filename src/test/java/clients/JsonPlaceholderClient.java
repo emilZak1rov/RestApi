@@ -29,12 +29,14 @@ public class JsonPlaceholderClient {
 
     public static JsonPlaceholderResponse<Post> getPostById(int id) {
         return JsonPlaceholderResponse.fromResponse(API.getRequest(getFullEndpoint(POSTS_ENDPOINT, String.valueOf(id))),
-                Post.class);
+                new com.google.common.reflect.TypeToken<Post>() {
+                }.getType());
     }
 
     public static JsonPlaceholderResponse<Post> createPost(Post post) {
         return JsonPlaceholderResponse.fromResponse(API.sendRequest(getFullEndpoint(POSTS_ENDPOINT), ContentType.JSON, post),
-                Post.class);
+                new com.google.common.reflect.TypeToken<Post>() {
+                }.getType());
     }
 
     public static JsonPlaceholderResponse<List<User>> getAllUsers() {
@@ -46,6 +48,7 @@ public class JsonPlaceholderClient {
 
     public static JsonPlaceholderResponse<User> getUserById(int id) {
         return JsonPlaceholderResponse.fromResponse(API.getRequest(getFullEndpoint(USERS_ENDPOINT, String.valueOf(id))),
-                User.class);
+                new com.google.common.reflect.TypeToken<User>() {
+                }.getType());
     }
 }
