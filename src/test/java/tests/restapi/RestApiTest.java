@@ -8,6 +8,7 @@ import models.jsonplaceholder.User;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import tests.BaseTest;
 import utils.LogUtils;
 import utils.RandomUtils;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class RestApiTest extends BaseTest {
     @DataProvider(name = "RestApiModel")
     public Object[][] getTimerData() {
+
         RestApiTestData dataModel = FileDataReader.readAndParse("src/test/java/tests/restapi/restapi.json", RestApiTestData.class);
         return new Object[][]{
                 {dataModel}
@@ -26,11 +28,14 @@ public class RestApiTest extends BaseTest {
 
     @Test(dataProvider = "RestApiModel")
     public void Test(RestApiTestData data) {
+        SoftAssert softAssert = new SoftAssert();
         LogUtils.logInfo("1. Отправьте запрос GET, чтобы получить все сообщения (/posts).");
         JsonPlaceholderResponse<List<Post>> allPosts = JsonPlaceholderClient.getAllPosts();
 
-        assertStatusCode(allPosts.getStatusCode(), data.step1.expectedStatusCode);
-        assertFileFormat(allPosts.getContentType(), "application/json");
+        LogUtils.logInfo("Проверка кода состояния и формата файла");
+        softAssert.assertEquals(allPosts.getStatusCode(), data.step1.expectedStatusCode, "Код состояния не совпадает");
+        softAssert.assertTrue(allPosts.isFormatJson(), "Формат файла не json");
+        softAssert.assertAll();
 
         LogUtils.logInfo("Проверка сортировки сообщений по возрастанию");
         List<Post> ids = allPosts.getBody();
@@ -44,7 +49,7 @@ public class RestApiTest extends BaseTest {
                 data.step2.post.id, data.step2.post.id));
         JsonPlaceholderResponse<Post> postResponse = JsonPlaceholderClient.getPostById(data.step2.post.id);
 
-        assertStatusCode(postResponse.getStatusCode(), data.step2.expectedStatusCode);
+        Assert.assertEquals(postResponse.getStatusCode(), data.step2.expectedStatusCode, "Код состояния не совпадает");
 
         LogUtils.logInfo("Проверка информации о сообщении");
         int expectedUserId = data.step2.post.userId;
@@ -61,7 +66,7 @@ public class RestApiTest extends BaseTest {
                 data.step3.post.id, data.step3.post.id));
         postResponse = JsonPlaceholderClient.getPostById(data.step3.post.id);
 
-        assertStatusCode(postResponse.getStatusCode(), data.step3.expectedStatusCode);
+        Assert.assertEquals(postResponse.getStatusCode(), data.step3.expectedStatusCode, "Код состояния не совпадает");
 
         LogUtils.logInfo("Проверка body");
         Assert.assertEquals(postResponse.getBody().body, data.step3.post.body, "body не пустое");
@@ -76,7 +81,7 @@ public class RestApiTest extends BaseTest {
 
         postResponse = JsonPlaceholderClient.createPost(sendPost);
 
-        assertStatusCode(postResponse.getStatusCode(), data.step4.expectedStatusCode);
+        Assert.assertEquals(postResponse.getStatusCode(), data.step4.expectedStatusCode, "Код состояния не совпадает");
 
         LogUtils.logInfo("Проверка отправленного сообщения");
         Post createdPost = postResponse.getBody();
@@ -91,8 +96,10 @@ public class RestApiTest extends BaseTest {
         LogUtils.logInfo("5. Отправьте запрос GET, чтобы получить пользователей (/users).");
         JsonPlaceholderResponse<List<User>> allUsersResponse = JsonPlaceholderClient.getAllUsers();
 
-        assertStatusCode(allUsersResponse.getStatusCode(), data.step5.expectedStatusCode);
-        assertFileFormat(allUsersResponse.getContentType(), "application/json");
+        LogUtils.logInfo("Проверка кода состояния и формата файла");
+        softAssert.assertEquals(allUsersResponse.getStatusCode(), data.step5.expectedStatusCode, "Код состояния не совпадает");
+        softAssert.assertTrue(allUsersResponse.isFormatJson(), "Формат файла не json");
+        softAssert.assertAll();
 
         LogUtils.logInfo("Проверка совпадения ожидаемых и фактических пользовательских данных");
         List<User> users = allUsersResponse.getBody();
@@ -107,7 +114,7 @@ public class RestApiTest extends BaseTest {
                 data.step6.expectedStatusCode, data.step6.user.id));
         JsonPlaceholderResponse<User> userResponse = JsonPlaceholderClient.getUserById(data.step6.user.id);
 
-        assertStatusCode(userResponse.getStatusCode(), data.step6.expectedStatusCode);
+        Assert.assertEquals(userResponse.getStatusCode(), data.step6.expectedStatusCode, "Код состояния не совпадает");
 
         LogUtils.logInfo("Проверка совпадения пользовательских данных с данными на предыдущем шаге");
         Assert.assertEquals(userResponse.getBody(), actualUser);
@@ -124,16 +131,5 @@ public class RestApiTest extends BaseTest {
             }
         }
         return true;
-    }
-
-    private void assertStatusCode(int actual, int expected) {
-        LogUtils.logInfo("Проверка кода состояния");
-        Assert.assertEquals(actual, expected, "Код состояния не равен ожидаемому");
-    }
-
-    private void assertFileFormat(String contentType, String expectedContentType) {
-        LogUtils.logInfo("Проверка формата файла");
-        Assert.assertTrue(contentType != null && contentType.contains(expectedContentType),
-                "Content-type не равен ожидаемому");
     }
 }
