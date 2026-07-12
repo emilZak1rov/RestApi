@@ -21,10 +21,9 @@
 
 ### Сборка проекта
 
-1. Клонируйте репозиторий: https://github.com/tquality-education/e.zakirov.git
-2. Перейдите на ветку REST_API
-3. Установка зависимостей из файла pom.xml
-4. Для запуска теста, запустите файл RestApiTest.java
+1. Клонируйте репозиторий: https://github.com/emilZak1rov/RestApi.git
+2. Установка зависимостей из файла pom.xml
+3. Для запуска теста, запустите файл RestApiTest.java
 
 ## Описание ключевых компонентов
 
